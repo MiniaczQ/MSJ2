@@ -1,0 +1,1 @@
+#	Sending messages into server console

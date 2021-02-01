@@ -1,0 +1,1 @@
+#	Changes the state of the manager

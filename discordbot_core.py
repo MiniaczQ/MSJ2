@@ -1,34 +1,30 @@
-import os
-import discord
-from dotenv import load_dotenv
-
+from discordbot_init import discordbot, TOKEN, CHANNEL
 import discordbot_listener
 import discordbot_reactor
 
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD = os.getenv('DISCORD_GUILD')
-discordbot = discord.Client()
+serverMessages = []
+
+
 
 @discordbot.event
 async def on_ready():
-    for guild in discordbot.guilds:
-        if guild.name == GUILD:
-            break
+    channel = discordbot.get_channel(CHANNEL)
+    guild = channel.guild
+    
+    print(f"MSJ2 Discord Bot connected to #{channel.name} in {guild.name}")
 
-    print(
-        f'{discordbot.user} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})\n'
-    )
-
-    members = '\n - '.join([member.name for member in guild.members])
-    print(f'Guild Members:\n - {members}')
-
-@discordbot.event
-async def on_message(message):
-    if message.content == "!":
-        response = f'Whats your command {message.author}?'
-        await message.channel.send(response)
+    if __name__ == "__main__":
+        import time
+        await discordbot_reactor.setupServerMessages()
+        time.sleep(5)
+        await discordbot_reactor.updateServerStatus("3",True)
+        time.sleep(5)
+        await discordbot_reactor.updateServerStatus("1",True)
+        time.sleep(5)
+        await discordbot_reactor.updateServerStatus("2",True)
 
 def discordbot_start():
-    discordbot.start(TOKEN)
+    discordbot.run(TOKEN)
+
+if __name__ == "__main__":
+    discordbot_start()

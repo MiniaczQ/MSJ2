@@ -1,0 +1,5 @@
+.env
+/logs
+/other
+settings.json
+__pycache__

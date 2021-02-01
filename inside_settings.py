@@ -1,2 +1,1 @@
-logs_file = 'logs'
-worlds_file = 'worlds'
+logs_path = 'logs'

@@ -2,6 +2,8 @@
 
 from json import load, dump
 
+from logger import logger
+
 settings = {}
 
 defaults = {
@@ -11,9 +13,9 @@ defaults = {
 }
 
 validator = {
-    'cock': lambda v: v and type(v) == int,
-    'and': lambda v: v and type(v) == bool,
-    'balls': lambda v: v and type(v) == str
+    'cock': lambda v: v is not None and type(v) == int,
+    'and': lambda v: v is not None and type(v) == bool,
+    'balls': lambda v: v is not None and type(v) == str
 }
 
 try:
@@ -21,7 +23,11 @@ try:
         loaded = load(__file)
         for key in defaults.keys():
             l = loaded.get(key)
-            settings[key] = l if validator[key](l) else defaults[key]
+            if validator[key](l):
+                settings[key] = l
+            else:
+                settings[key] = defaults[key]
+                logger.warn(f'Invalid setting "{key}" with value: {l}')
 except OSError:
     #   No file found
     #   Use defaults

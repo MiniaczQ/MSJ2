@@ -3,8 +3,9 @@
 from datetime import datetime
 from os import getcwd, path, makedirs
 from shutil import rmtree
+from sys import stdout
 
-from inside_settings import logs_file
+from inside_settings import logs_path
 
 class Logger:
     def __init__(self, *streams):
@@ -58,6 +59,8 @@ class Logger:
         '''
         self.__write(f'[WARN] {msg}')
 
+logger = Logger(stdout)
+
 
 
 
@@ -65,10 +68,7 @@ class Logger:
 #   Testing
 
 if __name__ == "__main__":
-    from sys import stdout
     from time import sleep
-
-    logger = Logger(stdout)
 
     logger.info('Hello')
     sleep(1)

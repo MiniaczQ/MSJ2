@@ -59,6 +59,12 @@ class Logger:
         '''
         self.__write(f'[WARN] {msg}')
 
+    def erro(self, msg):
+        '''
+        Send an error level message.
+        '''
+        self.__write(f'[ERRO] {msg}')
+
 logger = Logger(stdout)
 
 
@@ -74,4 +80,4 @@ if __name__ == "__main__":
     sleep(1)
     logger.warn('world!')
     sleep(1)
-    logger.info(':)')
+    logger.erro(':)')

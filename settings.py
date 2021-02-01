@@ -1,4 +1,4 @@
-#   settings.json parser
+#   settings.json validator
 
 from json import load, dump
 

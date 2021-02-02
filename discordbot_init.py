@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 messages = {"servers": {}, "control": None}
 isRunning = False
 inARun = False
+serverNamesStart = []
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')

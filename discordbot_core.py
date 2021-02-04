@@ -10,10 +10,10 @@ async def on_ready():
     
     print(f"MSJ2 Discord Bot connected to #{channel.name} in {guild.name}")
 
-    await discordbot.setupServerMessages(serverNamesStart)
-    await discordbot.updateServerStatus("3","R")
+    if len (serverNamesStart) > 0:
+        await discordbot.setupServerMessages(serverNamesStart)
 
-def discordbot_start(serverNames=["1","2","3"]):
+def discordbot_start(serverNames=[]):
     global serverNamesStart
     serverNamesStart = serverNames
     discordbot.run(TOKEN)

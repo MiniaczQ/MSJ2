@@ -13,4 +13,4 @@ async def on_reaction_add(reaction, user):
     if reaction.message.id == messages["control"].id and not user.bot:
         await reaction.remove(user)
         await reaction.remove(discordbot.user)
-        await discordbot_reactor.swapState()
+        await discordbot.swapState()

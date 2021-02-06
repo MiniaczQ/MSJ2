@@ -1,29 +1,21 @@
-from discordbot_init import discordbot, TOKEN, CHANNEL
+from discordbot_init import *
 import discordbot_listener
 import discordbot_reactor
 
-serverMessages = []
-
-
-
 @discordbot.event
 async def on_ready():
+    global serverNamesStart
     channel = discordbot.get_channel(CHANNEL)
     guild = channel.guild
     
     print(f"MSJ2 Discord Bot connected to #{channel.name} in {guild.name}")
 
-    if __name__ == "__main__":
-        import time
-        await discordbot_reactor.setupServerMessages()
-        time.sleep(5)
-        await discordbot_reactor.updateServerStatus("3",True)
-        time.sleep(5)
-        await discordbot_reactor.updateServerStatus("1",True)
-        time.sleep(5)
-        await discordbot_reactor.updateServerStatus("2",True)
+    if len (serverNamesStart) > 0:
+        await discordbot.setupServerMessages(serverNamesStart)
 
-def discordbot_start():
+def discordbot_start(serverNames=[]):
+    global serverNamesStart
+    serverNamesStart = serverNames
     discordbot.run(TOKEN)
 
 if __name__ == "__main__":

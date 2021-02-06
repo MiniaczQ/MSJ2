@@ -1,11 +1,21 @@
 #	Events that execute an action on discord
-from discordbot_init import discordbot, TOKEN, CHANNEL
-from discordbot_core import serverMessages
+from discordbot_init import discordbot, TOKEN, CHANNEL, messages, isRunning
 
+STATUSDICT = {
+    "Done": "✅",
+    "Loading": "⌛",
+    "Sleeping": "💤",
+    "Running": "🏃‍♂️",
+    "D": "✅",
+    "L": "⌛",
+    "S": "💤",
+    "R": "🏃‍♂️"
+}
 
+@discordbot.event
 async def setupServerMessages(serverNames=["1", "2", "3"]):
-    for i in serverMessages:
-        serverMessages.remove(i)
+    messages["servers"] = {}
+    messages["control"] = {}
 
     channel = discordbot.get_channel(CHANNEL)
 
@@ -13,21 +23,38 @@ async def setupServerMessages(serverNames=["1", "2", "3"]):
         await message.delete()
 
     for serverName in serverNames:
-        message = await channel.send(f"Server {serverName} - ⌛")
-        serverMessages.append([serverName, message])
+        messages["servers"][serverName] = await channel.send(f"`Server {serverName}` - 💤")
 
+    messages["control"] = await channel.send("Press ▶ to start the servers.")
+    await messages["control"].add_reaction("▶")
 
+@discordbot.event
 async def updateServerStatus(serverName, status):
     """
-    status to be set to either True (meaning the server is loaded) or False (meaning the server is loading).
-    status can also be a string for a custom status.
+    status can be set to:
+    "D" for done (✅)
+    "L" for loading (⌛)
+    "S" for sleeping (💤)
     """
-    for i in serverMessages:
-        if i[0] == serverName:
-            if type(status) == type(True):
-                if status:
-                    status = "✅"
-                else:
-                    status = "⌛"
-            await i[1].edit(content=f"Server {serverName} - {status}")
-            break
+    await messages["servers"][serverName].edit(content=f"`Server {serverName}` - {STATUSDICT[status]}")
+
+@discordbot.event
+async def swapState():
+    await setRunning(not isRunning)
+
+@discordbot.event
+async def setRunning(value):
+    global isRunning, messages
+    if not value:
+        # for serverName in list(messages["servers"]):
+        #    await updateServerStatus(serverName, "S")
+        await messages["control"].edit(content="Press ▶ to start the servers.")
+        await messages["control"].add_reaction("▶")
+    else:
+        # for serverName in list(messages["servers"]):
+        #    await updateServerStatus(serverName, "L")
+        await messages["control"].edit(content="Press 🛑 to stop the servers.")
+        await messages["control"].add_reaction("🛑")
+    isRunning = value
+
+    # send signal to servers

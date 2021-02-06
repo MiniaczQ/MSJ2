@@ -5,6 +5,7 @@ import asyncio as aio
 from shlex import split
 
 import server_files
+import properties
 from server_names import names
 from settings import settings
 
@@ -26,7 +27,7 @@ class States:
 states_decoder = dict((value, key) for key, value in States.__dict__.items() if not key.startswith('__') and not callable(key))
 
 class Server:
-    def __init__(self, manager, id):
+    def __init__(self, id):
         '''
         Creates the instance's folder by copying the template.
         '''
@@ -36,6 +37,13 @@ class Server:
         self.process = None
 
         server_files.copy_template(self.directory)
+        properties.edit(self.directory, {
+            'server-ip': '127.0.0.1',
+            'server-port': settings['local_ports_start'] + id,
+            'motd': settings['motd'].replace('@name', names[id]),
+            'level-name': 'world',
+            'level-seed': '' 
+        })
     
     def __del__(self):
         '''
@@ -110,10 +118,10 @@ if __name__ == '__main__':
     loop = aio.get_event_loop()
     s = Server('manager', 1)
 
-    loop.run_until_complete(s.start())
+    #loop.run_until_complete(s.start())
 
-    input()
+    #input()
 
-    loop.run_until_complete(s.stop())
+    #loop.run_until_complete(s.stop())
 
     input()

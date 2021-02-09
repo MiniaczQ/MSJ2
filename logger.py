@@ -4,6 +4,7 @@ from datetime import datetime
 from os import getcwd, path, makedirs
 from shutil import rmtree
 from sys import stdout
+from threading import Lock
 
 from inside_settings import logs_path
 
@@ -29,6 +30,7 @@ class Logger:
         latest_log_file = open(latest_log_path, 'w')
 
         self.__streams = streams + (date_log_file, latest_log_file)
+        self.lock = Lock()
     
     @staticmethod
     def __finalize(msg):
@@ -41,11 +43,12 @@ class Logger:
         '''
         Finalize and send the message to all streams, then flush the streams.
         '''
-        for stream in self.__streams:
-            stream.write(self.__finalize(msg))
+        with self.lock:
+            for stream in self.__streams:
+                stream.write(self.__finalize(msg))
 
-        for stream in self.__streams:
-            stream.flush()
+            for stream in self.__streams:
+                stream.flush()
 
     def info(self, msg):
         '''

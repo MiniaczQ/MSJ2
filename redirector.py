@@ -84,7 +84,7 @@ class Redirector:
 
 async def create_redirector(*args, **kwargs):
     '''
-    Wrap of Redirector initialization.\n
+    Wrap of Redirector instance initialization.\n
     Use to create the instance in a remote loop.
     '''
     return Redirector(*args, **kwargs)

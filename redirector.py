@@ -2,10 +2,10 @@ import asyncio as aio
 import socket
 
 class Redirector:
-    def __init__(self, ip, port_to, port_from = 25565, packet_size = 8192):
+    def __init__(self, ip, port_to, port_from, packet_size):
         '''
         Class for local port redirection.\n
-        Use 'create_redirector' for creation in external loops.\n
+        Instantiation has to be done in the same loop as start/stop.\n
         Arguments:\n
         ip          -   Server machine IP (on the network you port forward)\n
         port_to     -   Port to redirect to (port of the server)\n
@@ -80,28 +80,3 @@ class Redirector:
         
         self.server = await aio.start_server(pair_up, self.ip, self.port_from, family=socket.AF_INET, backlog=5)
         await self.event.wait()
-
-async def create_redirector(*args, **kwargs):
-    '''
-    Wrap of Redirector instance initialization.\n
-    Use to create the instance in a remote loop.
-    '''
-    return Redirector(*args, **kwargs)
-
-
-
-
-
-#   Testing
-
-if __name__ == '__main__':
-    async def main():
-        r = await create_redirector('192.168.1.2', 26000, 26003, 2**16)
-        await start_stop(r)
-
-    async def start_stop(r):
-        aio.ensure_future(r.start())
-        await aio.sleep(10)
-        aio.ensure_future(r.stop())
-
-    aio.run(main())

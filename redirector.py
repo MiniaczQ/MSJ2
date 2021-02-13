@@ -1,5 +1,4 @@
 import asyncio as aio
-import threading
 import socket
 
 class Redirector:

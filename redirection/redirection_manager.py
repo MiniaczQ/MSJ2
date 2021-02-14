@@ -51,6 +51,7 @@ class RedirectionManager():
             self.queue.append(port)
             
             if len(self.queue) == 1:
+                #   Sole port in queue
                 await self.change(port)
 
     async def remove(self, port):
@@ -58,22 +59,23 @@ class RedirectionManager():
         Remove a port from the queue.\n
         If there is another element in the queue, redirect to it.
         '''
-        try:
-            index = self.queue.index(port)
+        if self.validate_port(port) is not None:
+            try:
+                index = self.queue.index(port)
 
-            if index != 0:
-                #   Port in the middle of the queue
-                self.queue.remove(port)
-            else:
-                #   Port at the front of the queue
-                self.queue.popleft()
-                if len(self.queue) != 0:
-                    await self.change(self.queue[0])
+                if index != 0:
+                    #   Port in the middle of the queue
+                    self.queue.remove(port)
                 else:
-                    await self.change(None)
-        finally:
-            #   Port not in the queue
-            pass
+                    #   Port at the front of the queue
+                    self.queue.popleft()
+                    if len(self.queue) != 0:
+                        await self.change(self.queue[0])
+                    else:
+                        await self.change(None)
+            finally:
+                #   Port not in the queue
+                pass
                 
 
 

@@ -4,69 +4,63 @@ from datetime import datetime
 from shutil import rmtree, copytree
 from os import getcwd, makedirs, path, listdir, remove
 
-import hidden_settings
-from logging_config import logging
-
-worlds_path = path.join(getcwd(), worlds_path)
-template_path = path.join(getcwd(), template_path)
-
-def copy_template(directory):
+def copy_template(self):
     try:
-        if path.exists(directory):
-            rmtree(directory)
-        copytree(hidden_settings.template_path, directory)
+        if path.exists(self.directory):
+            rmtree(self.directory)
+        copytree(self.template_path, self.directory)
     except OSError:
-        logging.error('Template server not found.')
+        self.logging.error(f'Template server could not be copied for server {self.name}.')
 
-def delete_template_copy(directory):
+def delete_template_copy(self):
     try:
-        if path.exists(directory):
-            rmtree(directory)
+        if path.exists(self.directory):
+            rmtree(self.directory)
     except OSError:
-        logging.warning('Template server copy could not be deleted.')
+        self.logging.warning(f'Server {self.name} folder could not be deleted.')
 
-def delete_whitelist(directory):
+def delete_whitelist(self):
     try:
-        d = path.join(directory, 'whitelist.json')
+        d = path.join(self.directory, 'whitelist.json')
         if path.isfile(d):
             remove(d)
     except OSError:
-        logging.warning('Server whitelist could not be deleted.')
+        self.logging.warning(f'Server {self.name} whitelist could not be deleted.')
 
-def delete_ops(directory):
+def delete_ops(self):
     try:
-        d = path.join(directory, 'ops.json')
+        d = path.join(self.directory, 'ops.json')
         if path.isfile(d):
             remove(d)
     except OSError:
-        logging.warning('Server ops could not be deleted.')
+        self.logging.warning(f'Server {self.name} ops could not be deleted.')
 
-def delete_world(directory):
+def delete_world(self):
     try:
-        d = path.join(directory, 'world')
+        d = path.join(self.directory, 'world')
         if path.exists(d):
             rmtree(d)
     except OSError:
-        logging.warning('Server world could not be deleted.')
+        self.logging.warning(f'Server {self.name} world could not be deleted.')
 
-def store_world(directory, seed):
-    if not path.exists(worlds_path):
+def store_world(self, seed):
+    if not path.exists(self.worlds_path):
         try:
-            makedirs(hidden_settings.worlds_path)
+            makedirs(self.worlds_path)
         except OSError:
-            logging.warning('Stored worlds folder could not be created.')
+            self.logging.warning(f'Stored worlds folder for server {self.name} could not be created.')
     
-    d = path.join(worlds_path, seed)
+    d = path.join(self.worlds_path, seed)
     if path.exists(d):
         rmtree(d)
-        logging.info(f'World with seed {seed} was stored.')
-    copytree(path.join(directory, 'world'), d)
+        self.logging.info(f'World from server {self.name} with seed {seed} was stored.')
+    copytree(path.join(self.directory, 'world'), d)
 
-def set_properties(directory, options):
+def set_properties(self, options):
     settings = {}
 
     try:
-        with open(path.join(directory, 'server.properties'), 'r', encoding='utf-8') as file:
+        with open(path.join(self.directory, 'server.properties'), 'r', encoding='utf-8') as file:
             for line in file.readlines():
                 if not line.startswith('#'):
                     line = line.strip()
@@ -75,11 +69,11 @@ def set_properties(directory, options):
         
         settings.update(options)
         
-        with open(path.join(directory, 'server.properties'), 'w', encoding='utf-8') as file:
+        with open(path.join(self.directory, 'server.properties'), 'w', encoding='utf-8') as file:
             for setting in settings.items():
                 file.write(f'{setting[0]}={setting[1]}\n')
     except:
-        pass
+        self.logging.warning(f'Server {self.name} could not edit properties.')
 
 
 

@@ -1,3 +1,7 @@
+'''
+Redirection manager with built-in queue.
+'''
+
 import logging
 from collections import deque
 

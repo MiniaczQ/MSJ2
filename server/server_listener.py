@@ -1,4 +1,6 @@
-#	Parsing and interpreting server output
+'''
+Server output interpretation.
+'''
 
 import threading
 import asyncio as aio
@@ -21,34 +23,49 @@ _messages = {
 }
 
 def _starting(server, line):
-    logger.info('starting')
+    pass
+    #logger.info('starting')
+    #   TODO    Logging
 
 def _genstart(server, line):
-    logger.info('generation started')
+    pass
+    #logger.info('generation started')
+    #   TODO    Logging
 
 def _gendone(server, line):
-    logger.info('generation finished')
+    pass
+    #logger.info('generation finished')
+    #   TODO    Logging
 
 def _prompt(server, line):
-    logger.info('priority mode')
+    pass
+    #logger.info('priority mode')
+    #   TODO    Logging
 
 def _time0(server, line):
-    logger.info('run started')
+    pass
+    #logger.info('run started')
+    #   TODO    Logging
 
 def _stop(server, line):
-    logger.info('stopped')
+    pass
+    #logger.info('stopped')
+    #   TODO    Logging
 
 def _joined(server, line):
     player_name = line[33:-16]
-    logger.info(f'{player_name} joined.')
+    #logger.info(f'{player_name} joined.')
+    #   TODO    Logging
 
 def _left(server, line):
     player_name = line[33:-14]
-    logger.info(f'{player_name} left.')
+    #logger.info(f'{player_name} left.')
+    #   TODO    Logging
 
 def _advancement(server, line):
     advancement_name = line[search(r'has made the advancement', advancement_name).end(0)+2:-2]
-    logger.info(f'{advancement_name}')
+    #logger.info(f'{advancement_name}')
+    #   TODO    Logging
 
 _reactions = {
     'starting': _starting,

@@ -1,4 +1,6 @@
-#   Define lööps ┌('▽')┐
+'''
+Definition of all needed loops and threads.
+'''
 
 import asyncio as aio
 from threading import Thread

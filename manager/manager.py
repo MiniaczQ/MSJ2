@@ -1,4 +1,6 @@
-#   States, main server loop
+'''
+Finzalization of manager class.
+'''
 
 import threading
 from time import sleep, monotonic
@@ -6,7 +8,6 @@ from time import sleep, monotonic
 from settings import settings
 from server_core import Server
 from redirector import Redirector
-from logger import logger
 
 #   Enum for states
 class States:
@@ -45,7 +46,7 @@ class Manager(threading.Thread):
         Use 'start' instead!
         '''
         while self.state > 0:
-            logger.info('Server started')
+            #   TODO    Logging
             sleep(self.interval)
 
     def stop(self):

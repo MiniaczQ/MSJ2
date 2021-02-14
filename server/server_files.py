@@ -5,7 +5,6 @@ from shutil import rmtree, copytree
 from datetime import datetime
 
 from inside_settings import worlds_path, template_path
-from logger import logger
 
 worlds_path = path.join(getcwd(), worlds_path)
 template_path = path.join(getcwd(), template_path)
@@ -16,14 +15,16 @@ def copy_template(directory):
             rmtree(directory)
         copytree(template_path, directory)
     except OSError:
-        logger.warn('Failed to copy the server template.')
+        pass
+        #   TODO    Logging
 
 def delete_template_copy(directory):
     try:
         if path.exists(directory):
             rmtree(directory)
     except OSError:
-        logger.warn('Failed to delete a server.')
+        pass
+        #   TODO    Logging
 
 def delete_whitelist(directory):
     try:
@@ -31,7 +32,8 @@ def delete_whitelist(directory):
         if path.isfile(d):
             remove(d)
     except OSError:
-        logger.warn('Failed to delete "whitelist.json".')
+        pass
+        #   TODO    Logging
 
 def delete_ops(directory):
     try:
@@ -39,7 +41,8 @@ def delete_ops(directory):
         if path.isfile(d):
             remove(d)
     except OSError:
-        logger.warn('Failed to delete "ops.json".')
+        pass
+        #   TODO    Logging
 
 def delete_world(directory):
     try:
@@ -47,7 +50,8 @@ def delete_world(directory):
         if path.exists(d):
             rmtree(d)
     except OSError:
-        logger.warn('Failed to delete the world folder.')
+        pass
+        #   TODO    Logging
 
 def store_world(directory, seed):
     if not path.exists(worlds_path):
@@ -59,7 +63,7 @@ def store_world(directory, seed):
     d = path.join(worlds_path, seed)
     if path.exists(d):
         rmtree(d)
-        logger.warn('World with the same seed was overwritten.')
+        #   TODO    Logging
     copytree(path.join(directory, 'world'), d)
 
 def set_properties(directory, options):

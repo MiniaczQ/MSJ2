@@ -1,3 +1,7 @@
+'''
+Finalization of server class.
+'''
+
 import sys
 import asyncio as aio
 

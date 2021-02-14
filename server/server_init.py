@@ -1,3 +1,7 @@
+'''
+Initialization of server class.
+'''
+
 from os import getcwd, path, getenv
 import sys
 import threading

@@ -1,1 +1,3 @@
-#	Changes the state of the manager
+'''
+Operations on manager.
+'''

@@ -1,3 +1,7 @@
+'''
+Server naming convention.
+'''
+
 names = (
     "Alfa",
     "Bravo",

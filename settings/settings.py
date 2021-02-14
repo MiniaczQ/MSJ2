@@ -1,8 +1,8 @@
-#   settings.json validator
+'''
+Loading and validation of settings.
+'''
 
 from json import load, dump
-
-from logger import logger
 
 settings = {}
 
@@ -39,7 +39,8 @@ try:
                 settings[key] = l
             else:
                 settings[key] = defaults[key]
-                logger.warn(f'Invalid setting "{key}" with value: {l}')
+                #logger.warn(f'Invalid setting "{key}" with value: {l}')
+                #   TODO    Logging
 except OSError:
     settings = defaults
 finally:

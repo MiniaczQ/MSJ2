@@ -1,3 +1,7 @@
+'''
+Local port redirection class.
+'''
+
 import asyncio as aio
 import socket
 

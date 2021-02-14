@@ -1,4 +1,6 @@
-#	Sending messages into server console
+'''
+Operations on the server.
+'''
 
 import asyncio as aio
 import sys
@@ -7,9 +9,6 @@ import server_files
 import server_init
 from server_init import States
 import settings
-from logger import logger
-
-
 
 class Server(server_init.Server):
     def start_reader(self):

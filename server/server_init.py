@@ -5,7 +5,6 @@ from shlex import split
 import asyncio as aio
 
 import server_files
-import properties
 from server_names import names
 from settings import settings
 
@@ -37,7 +36,7 @@ class Server():
         self.reader = aio.Event()
 
         server_files.copy_template(self.directory)
-        properties.edit(self.directory, {
+        server_files.set_properties(self.directory, {
             'server-ip': '127.0.0.1',
             'server-port': settings['local_ports_start'] + id,
             'motd': settings['motd'].replace('@name', names[id]),

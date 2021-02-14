@@ -7,7 +7,6 @@ import sys
 
 import server_files
 import server_init
-from server_init import States
 import settings
 
 class Server(server_init.Server):
@@ -55,7 +54,7 @@ class Server(server_init.Server):
 
             self.start_reader()
 
-            self.change_state(States.Starting)
+            self.change_state(server_init.States.Starting)
 
     async def stop(self):
         '''
@@ -68,4 +67,4 @@ class Server(server_init.Server):
             await self.process.wait()
             self.process = None
 
-            self.change_state(States.Offline)
+            self.change_state(server_init.States.Offline)

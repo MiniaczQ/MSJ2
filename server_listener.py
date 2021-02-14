@@ -7,8 +7,8 @@ import asyncio as aio
 from re import compile, search
 
 import server_reactor
-import inside_settings
-from logger import logger
+import hidden_settings
+from logging_config import logging
 
 _messages = {
     'starting': compile(r'\[..:..:..\] \[Server thread/INFO\]: Starting minecraft server').search,
@@ -23,49 +23,36 @@ _messages = {
 }
 
 def _starting(server, line):
-    pass
-    #logger.info('starting')
-    #   TODO    Logging
+    logging.info('Server starting.')
 
 def _genstart(server, line):
     pass
-    #logger.info('generation started')
-    #   TODO    Logging
+    logging.info('Generation started.')
 
 def _gendone(server, line):
-    pass
-    #logger.info('generation finished')
-    #   TODO    Logging
+    logging.info('Generation finished.')
 
 def _prompt(server, line):
-    pass
-    #logger.info('priority mode')
-    #   TODO    Logging
+    logging.info('Prioritized.')
 
 def _time0(server, line):
-    pass
-    #logger.info('run started')
-    #   TODO    Logging
+    logging.info('Speedrunning')
 
 def _stop(server, line):
-    pass
-    #logger.info('stopped')
-    #   TODO    Logging
+    logging.info('Server stopped.')
 
 def _joined(server, line):
     player_name = line[33:-16]
-    #logger.info(f'{player_name} joined.')
-    #   TODO    Logging
+    logging.info(f'Player {player_name} joined.')
 
 def _left(server, line):
     player_name = line[33:-14]
-    #logger.info(f'{player_name} left.')
-    #   TODO    Logging
+    logging.info(f'Player {player_name} left.')
 
+_adv = compile(r'has made the advancement').search
 def _advancement(server, line):
-    advancement_name = line[search(r'has made the advancement', advancement_name).end(0)+2:-2]
-    #logger.info(f'{advancement_name}')
-    #   TODO    Logging
+    advancement_name = line[_adv(line).end(0)+2:-2]
+    logging.info(f'Advancement [{advancement_name}] has been made.')
 
 _reactions = {
     'starting': _starting,

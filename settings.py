@@ -4,6 +4,8 @@ Loading and validation of settings.
 
 from json import load, dump
 
+from logging_config import logging
+
 settings = {}
 
 #   Dictionary of default values for every setting
@@ -39,8 +41,7 @@ try:
                 settings[key] = l
             else:
                 settings[key] = defaults[key]
-                #logger.warn(f'Invalid setting "{key}" with value: {l}')
-                #   TODO    Logging
+                logging.warning(f'Invalid setting "{key}" with value: {l}')
 except OSError:
     settings = defaults
 finally:

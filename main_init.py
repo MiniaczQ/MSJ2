@@ -10,16 +10,10 @@ ManagerLoop = aio.new_event_loop()
 RedirectorLoop = aio.new_event_loop()
 
 class DiscordThread(Thread):
-    def __init__(self):
-        Thread.__init__(self)
-        aio.set_event_loop(DiscordLoop)
+    pass
 
 class ManagerThread(Thread):
-    def __init__(self):
-        Thread.__init__(self)
-        aio.set_event_loop(ManagerLoop)
+    pass
 
 class RedirectorThread(Thread):
-    def __init__(self):
-        Thread.__init__(self)
-        aio.set_event_loop(RedirectorLoop)
+    pass

@@ -2,10 +2,10 @@
 Redirection manager with built-in queue.
 '''
 
-import logging
 from collections import deque
 
 from redirector import Redirector
+from logging_config import logging
 
 class RedirectionManager():
     def __init__(self, ip, ports_to, port_from, packet_size):
@@ -25,6 +25,9 @@ class RedirectionManager():
         self.queue = deque()
     
     def validate_port(self, port):
+        '''
+        Returns None if port is invalid.
+        '''
         return port if port in self.redirectors.keys() else None
 
     async def change(self, new):
@@ -89,8 +92,6 @@ class RedirectionManager():
 
 if __name__ == '__main__':
     import asyncio as aio
-
-    logging.basicConfig(level=logging.INFO)
 
     async def main():
         rm = RedirectionManager('192.168.1.2', (25566, 25567), 25565, 2**16)

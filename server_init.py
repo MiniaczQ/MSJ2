@@ -8,10 +8,9 @@ import threading
 from shlex import split
 import asyncio as aio
 
-import server_files
+import server_files as files
 from server_names import names
 from settings import settings
-
 
 #   Enum for states
 class States:
@@ -39,9 +38,9 @@ class Server():
         self.process = None
         self.reader = aio.Event()
 
-        server_files.copy_template(self.directory)
-        server_files.set_properties(self.directory, {
-            'server-ip': '127.0.0.1',
+        files.copy_template(self.directory)
+        files.set_properties(self.directory, {
+            'server-ip': settings['server_ip'],
             'server-port': settings['local_ports_start'] + id,
             'motd': settings['motd'].replace('@name', names[id]),
             'level-name': 'world',
@@ -59,4 +58,4 @@ class Server():
         '''
         Deletes the copy of the template.
         '''
-        server_files.delete_template_copy(self.directory)
+        files.delete_template_copy(self.directory)

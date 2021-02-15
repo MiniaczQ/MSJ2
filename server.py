@@ -7,15 +7,15 @@ import asyncio as aio
 from shlex import split
 from os import path, getenv
 
-import server_files
-import server_input
-import server_output
+from server_files import ServerFiles
+from server_input import ServerInput
+from server_output import ServerOutput
 import server_states
 import server_names
 
 _java_path = getenv('JAVA') or getenv('JAVA_HOME') or getenv('JAVA_PATH')
 
-class Server():
+class Server(ServerFiles, ServerInput, ServerOutput):
     def _assemble_args(self, javargs, jarname, nogui):
         self.args = split(javargs)
         self.args.insert(0, path.join(_java_path, 'bin', 'java.exe'))
@@ -25,7 +25,7 @@ class Server():
             self.args.append('--nogui')
     
     def _set_properties(self, ip, port, motd):
-        server_files.set_properties(self, {
+        self.set_properties({
             'server-ip': ip,
             'server-port': port,
             'motd': motd.replace('%(name)s', server_names.names[self.id]),
@@ -49,30 +49,21 @@ class Server():
         self.template_path = template_path
         self.worlds_path = worlds_path
 
-        server_files.copy_template(self)
+        self.copy_template()
         self._set_properties(ip, port, motd)
         self._assemble_args(javargs, jarname, nogui)
 
         self.players = {}
         self.advancements = {}
-    
+
+        self.server_start_time = None
+        self.speedrun_start_time = None
+
     def __del__(self):
         '''
         Deletes the copy of the template.
         '''
-        server_files.delete_template_copy(self)
-    
-    #   Loading i/o methods
-    write = server_input.write
-    reset = server_input.reset
-    change_state  = server_input.change_state
-    store_world = server_input.store_world
-    start = server_input.start
-    stop = server_input.stop
-
-    start_reader = server_output.start_reader
-    read = server_output.read
-    stop_reader = server_output.stop_reader
+        self.delete_template_copy()
 
 
 

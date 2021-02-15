@@ -1,0 +1,4 @@
+'''
+Manager file operations.
+'''
+

@@ -21,26 +21,27 @@ class Manager():
         self.event = aio.Event()
         for id in range(settings['server_count']):
             self.servers.append(Server(id))
+    
+    def change_state(self, new_state):
+        '''
+        Called when manager state changes.
+        '''
+        self.state = new_state
 
     def start(self):
         '''
-        Start the manager.\n
+        Start the manager.
         '''
-        self.state = States.Cycling
         self.event.set()
         aio.ensure_future(self.start())
-    
-    def run(self):
-        '''
-        Prevent 
-        '''
+        self.change_state(States.Cycling)
 
     def stop(self):
         '''
         Stop the manager and all the servers.
         '''
         self.event.clear()
-        self.state = States.Stopped
+        self.change_state(States.Stopped)
 
     def __del__(self):
         '''

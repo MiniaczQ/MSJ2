@@ -28,25 +28,30 @@ def _genstart(self, line):
     self.logging.info(f'Server {self.name} generation started.')
 
 def _gendone(self, line):
+    delta = aio.get_event_loop().time() - self.server_start_time
+    #   TODO    Update average start time
     self.change_state(server_states.States.Awaiting)
     self.logging.info(f'Server {self.name} generation finished.')
+    self.logging.info(f'Server {self.name} ready in {delta:0.3f} seconds.')
 
 def _prompt(self, line):
     self.change_state(server_states.States.Prioritized)
     self.logging.info(f'Server {self.name} prioritized.')
 
 def _time0(self, line):
+    self.speedrun_start_time = aio.get_event_loop().time()
     self.change_state(server_states.States.Speedrunning)
     self.logging.info(f'Server {self.name} speedrun has started.')
 
 def _stop(self, line):
-    self.change_state(server_states.States.Stopping)
+    self.change_state(server_states.States.Offline)
     self.logging.info(f'Server {self.name} stopped.')
 
 def _joined(self, line):
     player_name = line[33:-16]
     if len(self.players.items()) == 0:
         self.change_state(server_states.States.Probing)
+        self.write(f'op {player_name}')
     self.players[player_name] = True
     self.logging.info(f'Player {player_name} joined server {self.name}.')
 
@@ -60,7 +65,8 @@ def _advancement(self, line):
     advancement_name = line[_adv(line).end(0)+2:-1]
     if self.advancements.get(advancement_name) is None:
         self.advancements[advancement_name] = True
-        self.logging.info(f'Advancement [{advancement_name}] has been made for the first time at [timestamp].')
+        delta = aio.get_event_loop().time() - self.speedrun_start_time
+        self.logging.info(f'Advancement [{advancement_name}] has been made for the first time in [{delta//60}:{delta%60:0.3f}].')
 
 _reactions = {
     'starting': _starting,
@@ -74,18 +80,15 @@ _reactions = {
     'advancement': _advancement
 }
 
-def start_reader(self):
-    self.reader.set()
-    aio.ensure_future(self.read())
-
-async def read(self):
-    while self.reader.is_set():
-        line = await self.process.stdout.readline()
-        line = line.decode().strip()
-        for name, msg in _messages.items():
-            if msg(line):
-                _reactions[name](self, line)
-                break
-
-def stop_reader(self):
-    self.reader.clear()
+class ServerOutput:
+    async def read(self):
+        while self.reader.is_set():
+            line = await self.process.stdout.readline()
+            line = line.decode().strip()
+            for name, msg in _messages.items():
+                if msg(line):
+                    _reactions[name](self, line)
+                    break
+    
+    def get_players(self):
+        return self.players.keys()

@@ -2,16 +2,19 @@ from discordbot_init import *
 import discordbot_listener
 import discordbot_reactor
 
+
 @discordbot.event
 async def on_ready():
-    global serverNamesStart
-    channel = discordbot.get_channel(CHANNEL)
-    guild = channel.guild
-    
-    print(f"MSJ2 Discord Bot connected to #{channel.name} in {guild.name}")
+    global serverNamesStart,alreadyStarted
+    if not alreadyStarted:
+        alreadyStarted = True
+        channel = discordbot.get_channel(CHANNEL)
+        guild = channel.guild
 
-    if len (serverNamesStart) > 0:
-        await discordbot.setupServerMessages(serverNamesStart)
+        print(f"MSJ2 Discord Bot connected to #{channel.name} in {guild.name}")
+
+        if len (serverNamesStart) > 0:
+            await discordbot.setupServerMessages(serverNamesStart)
 
 def discordbot_start(serverNames=[]):
     global serverNamesStart
@@ -19,4 +22,4 @@ def discordbot_start(serverNames=[]):
     discordbot.run(TOKEN)
 
 if __name__ == "__main__":
-    discordbot_start()
+    discordbot_start(["1","2","3"])

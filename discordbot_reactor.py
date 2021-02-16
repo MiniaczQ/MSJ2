@@ -95,10 +95,10 @@ async def processCommand(content):
             else:
                 if args[1] == "auto":
                     await discordbot.setResponse(f"Whitelist mode has been set to automatic.")
-                    serverSettings['version'] = args[1]
+                    serverSettings['whitelist-mode'] = args[1]
                 elif args[1] == "off":
                     await discordbot.setResponse(f"Whitelist mode has been set to off.")
-                    serverSettings['version'] = args[1]
+                    serverSettings['whitelist-mode'] = args[1]
                 else:
                     await discordbot.setResponse(f"Invalid whitelist mode.")
 

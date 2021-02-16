@@ -49,13 +49,18 @@ Change Priority Mode:
 `2player` - If a second player joins the server, it will enable priority on the world.
 `message` - If a player sends a message in the chat, it will enable priority on the world.
 
+Change Render Distance:
+`!rd [(rd)]`
+`(rd)` - Replace with a number between 2 and 32 (between 2 and 16 for 1.7.2).
+
 """
 
 serverSettings = {
     "operator-mode": "auto",
     "version": "1.14.4",
     "whitelist-mode": "auto",
-    "priority-mode": "message"
+    "priority-mode": "message",
+    "render-distance": 12
 }
 
 load_dotenv()

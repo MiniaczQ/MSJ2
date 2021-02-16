@@ -6,8 +6,9 @@ from collections import deque
 
 from redirector import Redirector
 from logging_config import logging
+import aio_loops
 
-class RedirectionManager():
+class RedirectionManager(aio_loops.LoopBase):
     def __init__(self, ip, ports_to, port_from, packet_size):
         '''
         Class for managing local port redirecting.\n
@@ -18,6 +19,7 @@ class RedirectionManager():
         port_from   -   Port to redirect from (port the people use)\n
         packet_size -   Bytes per data transfer (preferably power of 2)
         '''
+        self.loop = aio_loops.RedirectorLoop
         self.redirectors = {}
         for port_to in ports_to:
             self.redirectors[port_to] = Redirector(ip, port_to, port_from, packet_size)
@@ -111,4 +113,4 @@ if __name__ == '__main__':
         await rm.append(25568)
         await aio.sleep(2)
 
-    aio.run(main())
+    aio_loops.RedirectorLoop.run_until_complete(main())

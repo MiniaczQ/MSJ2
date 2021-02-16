@@ -5,7 +5,9 @@ Local port redirection class.
 import asyncio as aio
 import socket
 
-class Redirector:
+import aio_loops
+
+class Redirector(aio_loops.LoopBase):
     def __init__(self, ip, port_to, port_from, packet_size):
         '''
         Class for local port redirection.\n
@@ -16,6 +18,7 @@ class Redirector:
         port_from   -   Port to redirect from (port the people use)\n
         packet_size -   Bytes per data transfer (preferably power of 2)
         '''
+        self.loop = aio_loops.RedirectorLoop
         self.ip = ip
         self.port_to = port_to
         self.port_from = port_from
@@ -45,7 +48,7 @@ class Redirector:
         if self.server is None:
             self.event.set()
 
-            aio.ensure_future(self.run())
+            self.ensure(self.run())
 
     async def run(self):
         '''
@@ -79,8 +82,7 @@ class Redirector:
             - server to client.
             '''
             s_reader, s_writer = await aio.open_connection(self.ip, self.port_to, family=socket.AF_INET)
-            f1 = aio.ensure_future(forward(s_reader, c_writer))
-            f2 = aio.ensure_future(forward(c_reader, s_writer))
+            self.ensure(forward(s_reader, c_writer))
+            self.ensure(forward(c_reader, s_writer))
         
         self.server = await aio.start_server(pair_up, self.ip, self.port_from, family=socket.AF_INET, backlog=5)
-        await self.event.wait()

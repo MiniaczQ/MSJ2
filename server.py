@@ -10,8 +10,8 @@ from os import path, getenv
 from server_files import ServerFiles
 from server_input import ServerInput
 from server_output import ServerOutput
-import server_states
-import server_names
+from server_states import States
+from server_names import names
 
 _java_path = getenv('JAVA') or getenv('JAVA_HOME') or getenv('JAVA_PATH')
 
@@ -28,28 +28,28 @@ class Server(ServerFiles, ServerInput, ServerOutput):
         self.set_properties({
             'server-ip': ip,
             'server-port': port,
-            'motd': motd.replace('%(name)s', server_names.names[self.id]),
+            'motd': motd.replace('%(name)s', names[self.id]),
             'level-name': 'world',
             'level-seed': '' 
         })
 
-    def __init__(self, logging, id, ip, port, servers_path, template_path, worlds_path, jarname, motd='%(name)s', javargs='', nogui=False):
+    def __init__(self, manager, logging, id, ip, port, servers_path, template_path, worlds_path, jarname, motd='%(name)s', javargs='', nogui=False):
         '''
         Creates the instance's folder by copying the template.
         '''
+        self.manager = manager
         self.logging = logging
 
         self.id = id
-        self.name = server_names.names[id]
+        self.name = names[id]
         self.directory = path.join(servers_path, self.name)
-        self.change_state(server_states.States.Offline)
+        self.change_state(States.Offline)
         self.process = None
         self.reader = aio.Event()
 
         self.template_path = template_path
         self.worlds_path = worlds_path
 
-        self.copy_template()
         self._set_properties(ip, port, motd)
         self._assemble_args(javargs, jarname, nogui)
 
@@ -58,12 +58,6 @@ class Server(ServerFiles, ServerInput, ServerOutput):
 
         self.server_start_time = None
         self.speedrun_start_time = None
-
-    def __del__(self):
-        '''
-        Deletes the copy of the template.
-        '''
-        self.delete_template_copy()
 
 
 
@@ -83,7 +77,7 @@ if __name__ == '__main__':
         from logging_config import logging
 
         root = path.join('..', getcwd())
-        s = Server(logging, 0, '192.168.1.2', 25566, path.join(root, 'servers'), path.join(root, 'template'), path.join(root, 'worlds'), 'fabric-server-launch.jar')
+        s = Server(logging, 0, '192.168.1.2', 25566, path.join(root, 'servers'), path.join(root, 'templates', '1.16f'), path.join(root, 'worlds'), 'fabric-server-launch.jar')
         l = aio.Lock()
 
         await s.start()

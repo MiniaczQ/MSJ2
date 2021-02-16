@@ -1,16 +1,11 @@
 '''
-Possible states the server can be in.
+Possible states the manager can be in.
 '''
 
 class States:
-    Offline = 0
-    Starting = 1
-    Generation = 2
-    Awaiting = 3
-    Probing = 4
-    Prioritized = 5
-    Speedrunning = 6
-    Stopping = 7
+    Stopped = 0
+    Cycling = 1
+    Priority = 2
 
     @staticmethod
     def validate(state):

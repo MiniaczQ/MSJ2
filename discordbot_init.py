@@ -53,7 +53,7 @@ Change Priority Mode:
 
 serverSettings = {
     "operator-mode": "auto",
-    "version": "1.14.2",
+    "version": "1.14.4",
     "whitelist-mode": "auto",
     "priority-mode": "message"
 }

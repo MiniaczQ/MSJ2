@@ -5,49 +5,36 @@ Finalization of manager class.
 import asyncio as aio
 from time import sleep, monotonic
 
-from settings import settings
 from server import Server
 
-class States:
-    Stopped = 0
-    Cycling = 1
-    Priority = 2
+from manager_files import ManagerFiles
+from manager_input import ManagerInput
+from manager_output import ManagerOutput
+from manager_states import States
 
-states_decoder = dict((value, key) for key, value in States.__dict__.items() if not key.startswith('__') and not callable(key))
+class Manager(ManagerFiles, ManagerInput, ManagerOutput):
+    def __init__(self, logging, directory, templates_path, server_count, ip, port_start, servers_path, worlds_path, jarname, motd, javargs, nogui):
+        self.state = self.change_state(States.Stopped)
+        
+        self.logging = logging
+        self.directory = directory
 
-class Manager():
-    def __init__(self):
-        self.state = States.Stopped
-        self.event = aio.Event()
-        for id in range(settings['server_count']):
-            self.servers.append(Server(id))
-    
-    def change_state(self, new_state):
-        '''
-        Called when manager state changes.
-        '''
-        self.state = new_state
+        self.templates_path = templates_path
 
-    def start(self):
-        '''
-        Start the manager.
-        '''
-        self.event.set()
-        aio.ensure_future(self.start())
-        self.change_state(States.Cycling)
+        self.server_count = server_count
+        self.servers = []
 
-    def stop(self):
-        '''
-        Stop the manager and all the servers.
-        '''
-        self.event.clear()
-        self.change_state(States.Stopped)
+        self.templates = self.get_all_templates()
+        self.template = None
 
-    def __del__(self):
-        '''
-        Cleanup.
-        '''
-        del self.servers
+        self.ip = ip
+        self.port_start = port_start
+        self.servers_path = servers_path
+        self.worlds_path = worlds_path
+        self.jarname = jarname
+        self.motd = motd
+        self.javargs = javargs
+        self.nogui = nogui
 
 
 

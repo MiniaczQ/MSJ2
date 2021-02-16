@@ -2,9 +2,8 @@
 Server file operations.
 '''
 
-from datetime import datetime
 from shutil import rmtree, copytree
-from os import getcwd, makedirs, path, listdir, remove
+from os import mkdir, path, remove
 
 class ServerFiles:
     def copy_template(self):
@@ -13,14 +12,14 @@ class ServerFiles:
                 rmtree(self.directory)
             copytree(self.template_path, self.directory)
         except OSError:
-            self.logging.error(f'Template server could not be copied for server {self.name}.')
+            self.logging.error(f'Template could not be copied for server {self.name}.')
 
     def delete_template_copy(self):
-        try:
-            if path.exists(self.directory):
+        if path.exists(self.directory):
+            try:
                 rmtree(self.directory)
-        except OSError:
-            self.logging.warning(f'Server {self.name} folder could not be deleted.')
+            except OSError:
+                self.logging.warning(f'Server {self.name} folder could not be deleted.')
 
     def delete_whitelist(self):
         try:
@@ -49,20 +48,20 @@ class ServerFiles:
     def store_world(self, seed):
         if not path.exists(self.worlds_path):
             try:
-                makedirs(self.worlds_path)
+                mkdir(self.worlds_path)
             except OSError:
                 self.logging.warning(f'Stored worlds folder for server {self.name} could not be created.')
         
         d = path.join(self.worlds_path, seed)
-        if path.exists(d):
-            rmtree(d)
+        try:
+            copytree(path.join(self.directory, 'world'), d)
             self.logging.info(f'World from server {self.name} with seed {seed} was stored.')
-        copytree(path.join(self.directory, 'world'), d)
+        except OSError:
+            self.logging.error(f'World from server {self.name} with seed {seed} could not be stored.')
 
     def set_properties(self, options):
-        settings = {}
-
         try:
+            settings = {}
             with open(path.join(self.directory, 'server.properties'), 'r', encoding='utf-8') as file:
                 for line in file.readlines():
                     if not line.startswith('#'):
@@ -76,4 +75,4 @@ class ServerFiles:
                 for setting in settings.items():
                     file.write(f'{setting[0]}={setting[1]}\n')
         except:
-            self.logging.warning(f'Server {self.name} could not edit properties.')
+            self.logging.warning(f'Server {self.name} properties could not be edited.')

@@ -5,7 +5,7 @@ Server output interface.
 import asyncio as aio
 from re import compile, search
 
-import server_states
+from server_states import States
 
 _messages = {
     'starting': compile(r'\[..:..:..\] \[Server thread/INFO\]: Starting minecraft server').search,
@@ -20,37 +20,37 @@ _messages = {
 }
 
 def _starting(self, line):
-    self.change_state(server_states.States.Starting)
+    self.change_state(States.Starting)
     self.logging.info(f'Server {self.name} starting.')
 
 def _genstart(self, line):
-    self.change_state(server_states.States.Generation)
+    self.change_state(States.Generation)
     self.logging.info(f'Server {self.name} generation started.')
 
 def _gendone(self, line):
     delta = aio.get_event_loop().time() - self.server_start_time
     #   TODO    Update average start time
-    self.change_state(server_states.States.Awaiting)
+    self.change_state(States.Awaiting)
     self.logging.info(f'Server {self.name} generation finished.')
     self.logging.info(f'Server {self.name} ready in {delta:0.3f} seconds.')
 
 def _prompt(self, line):
-    self.change_state(server_states.States.Prioritized)
+    self.change_state(States.Prioritized)
     self.logging.info(f'Server {self.name} prioritized.')
 
 def _time0(self, line):
     self.speedrun_start_time = aio.get_event_loop().time()
-    self.change_state(server_states.States.Speedrunning)
+    self.change_state(States.Speedrunning)
     self.logging.info(f'Server {self.name} speedrun has started.')
 
 def _stop(self, line):
-    self.change_state(server_states.States.Offline)
+    self.change_state(States.Offline)
     self.logging.info(f'Server {self.name} stopped.')
 
 def _joined(self, line):
     player_name = line[33:-16]
     if len(self.players.items()) == 0:
-        self.change_state(server_states.States.Probing)
+        self.change_state(States.Probing)
         self.write(f'op {player_name}')
     self.players[player_name] = True
     self.logging.info(f'Player {player_name} joined server {self.name}.')
@@ -81,7 +81,10 @@ _reactions = {
 }
 
 class ServerOutput:
-    async def read(self):
+    async def read_loop(self):
+        '''
+        Server reading loop.
+        '''
         while self.reader.is_set():
             line = await self.process.stdout.readline()
             line = line.decode().strip()
@@ -91,4 +94,13 @@ class ServerOutput:
                     break
     
     def get_players(self):
+        '''
+        Returns the list of all players that ever joined the server.
+        '''
         return self.players.keys()
+
+    def state_changed(self, new_state):
+        '''
+        Called when server state changes.
+        '''
+        pass

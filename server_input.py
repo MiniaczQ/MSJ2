@@ -5,8 +5,7 @@ Server input interface.
 import asyncio as aio
 import sys
 
-import server_files
-import server_states
+from server_states import States
 
 class ServerInput:
     def write(self, msg):
@@ -19,27 +18,27 @@ class ServerInput:
         '''
         Deletes world, whitelist and server operators from the server.
         '''
-        server_files.delete_ops(self)
-        server_files.delete_whitelist(self)
-        server_files.delete_world(self)
+        self.delete_ops()
+        self.delete_whitelist()
+        self.delete_world()
         self.players.clear()
         self.advancements.clear()
         self.start_time = None
 
     def change_state(self, new_state):
         '''
-        Called when server state changes.
+        Call to change server state.
         '''
-        self.state = new_state
-        #   TODO    Tell discord bot to update
-        #aio.run_coroutine_threadsafe()
+        if States.validate(new_state):
+            self.state = new_state
+            self.state_changed(new_state)
 
     def store_world(self, seed):
         '''
         Called after '/seed' is used.\n
         Stores the world with the seed as a name.
         '''
-        server_files.store_world(self, seed)
+        self.store_world(seed)
 
     async def start(self):
         '''
@@ -65,7 +64,7 @@ class ServerInput:
         Start server console reader.
         '''
         self.reader.set()
-        aio.ensure_future(self.read())
+        aio.ensure_future(self.read_loop())
     
     def stop_reader(self):
         '''

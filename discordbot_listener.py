@@ -10,6 +10,15 @@ async def on_message(message):
         await message.delete()
         await discordbot.processCommand(content)
 
+    else:
+        content = message.content
+        args = content.split()
+        if len(args) > 1 and args[0] == "!stupify":
+            string = ""
+            for i in content[9:]:
+                string += "||"+i+"||"
+            await message.channel.send(string)
+
 
 @discordbot.event
 async def on_reaction_add(reaction, user):

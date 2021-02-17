@@ -127,7 +127,7 @@ async def processCommand(content):
                     rd = int(args[1])
                     if rd >= 2 and rd <= 32:
                         await discordbot.setResponse(f"Render distance has been set to {rd}.")
-                        serverSettings['priority-mode'] = rd
+                        serverSettings['render-distance'] = rd
                     else:
                         await discordbot.setResponse(f"Invalid render distance!")
 

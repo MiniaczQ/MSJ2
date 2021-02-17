@@ -1,6 +1,6 @@
 #	Parsing and interpreting discord input
 from discordbot_init import *
-
+from random import randint
 
 @discordbot.event
 async def on_message(message):
@@ -14,10 +14,17 @@ async def on_message(message):
         content = message.content
         args = content.split()
         if len(args) > 1 and args[0] == "!stupify":
-            string = ""
+            string = "<@"+str(message.author.id) + "> says: "
             for i in content[9:]:
                 string += "||"+i+"||"
             await message.channel.send(string)
+        if len(args) == 1 and args[0] == "!findseed":
+            eyes = 0
+            for i in range(12):
+                if randint(1,10) == 1:
+                    eyes += 1
+            await message.channel.send("<@"+str(message.author.id)+"> You got a "+str(eyes)+" eye.")
+            
 
 
 @discordbot.event

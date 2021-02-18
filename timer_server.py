@@ -93,7 +93,7 @@ class TimerServer:
         self.updateClients()
     
     def pauseTimer(self):
-        if self.timerStatus != "paused":
+        if self.timerStatus == "running":
             self.pauseTime = self.syncedTime.time()-self.startTime
             self.timerStatus = "paused"
         self.updateClients()

@@ -27,17 +27,25 @@ class SyncedTime:
 
 
 class TimerClientInstance:
-    def __init__(self, c, addr):
+    def __init__(self, parent, c, addr):
+        self.parent = parent
         self.clientSocket = c
         self.addr = addr
-        self.running = False
-        self.thread = Thread(target=loop)
+        self.running = True
+        self.thread = Thread(target=self.loop)
+        self.thread.start()
 
     def loop(self):
-        while self.running:
-            msg = self.clientSocket.recv(1024)
-            if msg.decode() == "quit":
-                self.running = False
+        try:
+            while self.running:
+                msg = self.clientSocket.recv(1024)
+                if msg.decode() == "quit":
+                    self.running = False
+                    self.send("end")
+        except:
+            pass
+        self.parent.removeClient(self)
+        
 
     def send(self, msg):
         self.clientSocket.send(msg.encode())
@@ -59,26 +67,79 @@ class TimerServer:
         self.clients = []
         self.running = False
         self.startTime = self.syncedTime.time()
-        self.timerRunning = False
+        self.pauseTime = 0
+        self.timerStatus = "stopped"
 
     def start(self):
         if not self.running:
             self.running = True
 
             self.socket.bind((self.addr, self.port))
+            self.socket.listen(50)
 
-            self.ACT = Thread(target=self.acceptConnectionsThread)
-            self.ACT.run()
+            self.acceptConnectionsThread = Thread(target=self.acceptConnectionsLoop)
+            self.acceptConnectionsThread.start()
+    
+    def startTimer(self):
+        self.startTime = self.syncedTime.time() - self.pauseTime
+        self.timerStatus = "running"
+        self.updateClients()
+    
+    def resetTimer(self):
+        self.timerStatus = "stopped"
+        self.pauseTime = 0
+        self.updateClients()
+    
+    def pauseTimer(self):
+        self.pauseTime = self.syncedTime.time()-self.startTime
+        self.timerStatus = "paused"
+        self.updateClients()
+    
+    def updateClient(self,client):
+        if self.timerStatus == "stopped":
+            client.send("stop")
+        elif self.timerStatus == "running":
+            client.send("running:"+str(self.startTime))
+        elif self.timerStatus == "paused":
+            client.send("paused:"+str(self.pauseTime))
+    
+    def updateClients(self):
+        for client in self.clients:
+            self.updateClient(client)
+    
+    def sendToAll(self,msg):
+        for client in self.clients:
+            client.send(msg)
 
-    def acceptConnectionsThread(self):
+    def acceptConnectionsLoop(self):
         while self.running:
-            c, addr = self.socket.accept()
-            self.clients.append(TimerClientInstance(c, addr))
+            try:
+                c, addr = self.socket.accept()
+                client = TimerClientInstance(self, c, addr)
+                if self.running:
+                    self.clients.append(client)
+                    print("[Timer Server] Client '"+str(addr)+"' connected.")
+                    self.updateClient(client)
+            except:
+                pass
 
     def kill(self):
         for i in self.clients:
             i.stop()
+        self.running = False
+        self.socket.close()
+        
+    
+    def removeClient(self, client):
+        self.clients.remove(client)
 
 
 if __name__ == "__main__":
-    pass
+    import keyboard
+    ts = TimerServer()
+    ts.start()
+    keyboard.add_hotkey("alt+\\",ts.resetTimer)
+    keyboard.add_hotkey("alt+[",ts.startTimer)
+    keyboard.add_hotkey("alt+]",ts.pauseTimer)
+    input()
+    ts.kill()

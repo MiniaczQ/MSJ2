@@ -81,18 +81,21 @@ class TimerServer:
             self.acceptConnectionsThread.start()
     
     def startTimer(self):
-        self.startTime = self.syncedTime.time() - self.pauseTime
-        self.timerStatus = "running"
+        if self.timerStatus != "running":
+            self.startTime = self.syncedTime.time() - self.pauseTime
+            self.timerStatus = "running"
         self.updateClients()
     
     def resetTimer(self):
-        self.timerStatus = "stopped"
-        self.pauseTime = 0
+        if self.timerStatus != "stopped":
+            self.pauseTime = 0
+            self.timerStatus = "stopped"
         self.updateClients()
     
     def pauseTimer(self):
-        self.pauseTime = self.syncedTime.time()-self.startTime
-        self.timerStatus = "paused"
+        if self.timerStatus != "paused":
+            self.pauseTime = self.syncedTime.time()-self.startTime
+            self.timerStatus = "paused"
         self.updateClients()
     
     def updateClient(self,client):
@@ -122,6 +125,18 @@ class TimerServer:
                     self.updateClient(client)
             except:
                 pass
+    
+    def setTime(self, x):
+        self.pauseTime = x
+        self.startTime = self.syncedTime.time()-x
+
+    def getTime(self):
+        if self.timerStatus == "stopped":
+            return 0.0
+        elif self.timerStatus == "running":
+            return self.syncedTime.time()-self.startTime()
+        elif self.timerStatus == "paused":
+            return self.pauseTime
 
     def kill(self):
         for i in self.clients:

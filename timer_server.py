@@ -138,6 +138,10 @@ class TimerServer:
         elif self.timerStatus == "paused":
             return self.pauseTime
 
+    def resync(self):
+        self.syncedTime.resync()
+        self.sendToAll("resync")
+
     def kill(self):
         for i in self.clients:
             i.stop()
@@ -146,6 +150,7 @@ class TimerServer:
         
     
     def removeClient(self, client):
+        print("[Timer Server] Client '"+str(client.addr)+"' disconnected.")
         self.clients.remove(client)
 
 
@@ -156,5 +161,6 @@ if __name__ == "__main__":
     keyboard.add_hotkey("alt+\\",ts.resetTimer)
     keyboard.add_hotkey("alt+[",ts.startTimer)
     keyboard.add_hotkey("alt+]",ts.pauseTimer)
+    keyboard.add_hotkey("alt+=",ts.resync)
     input()
     ts.kill()

@@ -20,7 +20,7 @@ _java_path = getenv('JAVA') or getenv('JAVA_HOME') or getenv('JAVA_PATH')
 class Server(ServerFiles, ServerInput, ServerOutput, aio_loops.LoopBase):
     def _assemble_args(self, javargs, jarname, nogui):
         self.args = split(javargs)
-        self.args.insert(0, path.join(_java_path, 'bin', 'java'+('.exe' if 'win' is sys.platform else '')))
+        self.args.insert(0, path.join(_java_path, 'bin', 'java'+('.exe' if 'win' in sys.platform else '')))
         self.args.append('-jar')
         self.args.append(jarname)
         if nogui:

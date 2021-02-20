@@ -74,6 +74,8 @@ class Redirector(aio_loops.LoopBase):
                     await dst.wait_closed()
             except ConnectionAbortedError:
                 pass
+            except BrokenPipeError:
+                pass
 
         async def pair_up(c_reader, c_writer):
             '''

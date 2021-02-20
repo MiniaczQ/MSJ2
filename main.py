@@ -31,17 +31,17 @@ class ManagerThread(aio_loops.ManagerThread):
                           hidden_settings.startup_time,
                           cwd,
                           path.join(cwd, hidden_settings.templates_path),
-                          settings.server_count,
-                          settings.server_ip,
-                          settings.local_ports_start,
+                          settings['server_count'],
+                          settings['server_ip'],
+                          settings['local_ports_start'],
                           path.join(cwd, hidden_settings.servers_path),
                           path.join(cwd, hidden_settings.worlds_path),
-                          settings.server_jar_name,
-                          settings.motd,
-                          settings.java_arguments,
-                          settings.nogui,
+                          settings['server_jar_name'],
+                          settings['motd'],
+                          settings['java_arguments'],
+                          settings['nogui'],
                           16)
-        manager.change_template(settings.default_template)
+        manager.change_template(settings['default_template'])
         manager.call_async(manager.start())
         aio_loops.ManagerLoop.run_forever()
 
@@ -49,9 +49,9 @@ class RedirectorThread(aio_loops.RedirectorThread):
     def run(self):
         aio.set_event_loop(aio_loops.RedirectorLoop)
         global redirector
-        redirector = RedirectionManager(settings.server_ip,
-                                        list(settings.local_ports_start + i for i in range(settings.server_count)),
-                                        settings.visible_port,
+        redirector = RedirectionManager(settings['server_ip'],
+                                        list(settings['local_ports_start'] + i for i in range(settings['server_count'])),
+                                        settings['visible_port'],
                                         hidden_settings.packet_size)
         
         mt = ManagerThread()

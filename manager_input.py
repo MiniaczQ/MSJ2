@@ -65,17 +65,13 @@ class ManagerInput:
         '''
         Launch a server and schedule another cycle call in the future.
         '''
-        self.logging.info('queue may be empty, wait')
         await self.not_empty_queue.wait()
-        self.logging.info('queue is not empty')
         server = self.offline_queue.popleft()
         if len(self.offline_queue) == 0:
             self.not_empty_queue.clear()
         await server.start()
         self.logging.info(f'Attempting to start server {server.name}.')
-        self.logging.info('sleep until starting another server')
         await aio.sleep(self.average_startup_time)
-        self.logging.info('done sleeping, start another server')
         self.cycle_again_callback = self.call_async(self.cycle())
             
     async def prioritize(self, server):

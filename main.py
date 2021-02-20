@@ -26,8 +26,22 @@ class ManagerThread(aio_loops.ManagerThread):
         aio.set_event_loop(aio_loops.ManagerLoop)
         global manager, redirector
         cwd = getcwd()
-        manager = Manager(redirector, logging, 12, cwd, path.join(cwd, 'templates'), 2, '192.168.1.2', 25566, path.join(cwd, 'servers'), path.join(cwd, 'worlds'), 'fabric-server-launch.jar')
-        manager.change_template('1.16.1f')
+        manager = Manager(redirector,
+                          logging,
+                          hidden_settings.startup_time,
+                          cwd,
+                          path.join(cwd, hidden_settings.templates_path),
+                          settings.server_count,
+                          settings.server_ip,
+                          settings.local_ports_start,
+                          path.join(cwd, hidden_settings.servers_path),
+                          path.join(cwd, hidden_settings.worlds_path),
+                          settings.server_jar_name,
+                          settings.motd,
+                          settings.java_arguments,
+                          settings.nogui,
+                          16)
+        manager.change_template(settings.default_template)
         manager.call_async(manager.start())
         aio_loops.ManagerLoop.run_forever()
 
@@ -35,7 +49,10 @@ class RedirectorThread(aio_loops.RedirectorThread):
     def run(self):
         aio.set_event_loop(aio_loops.RedirectorLoop)
         global redirector
-        redirector = RedirectionManager('192.168.1.2', (25566, 25567), 25565, 2**16)
+        redirector = RedirectionManager(settings.server_ip,
+                                        list(settings.local_ports_start + i for i in range(settings.server_count)),
+                                        settings.visible_port,
+                                        hidden_settings.packet_size)
         
         mt = ManagerThread()
         mt.start()

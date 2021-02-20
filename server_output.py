@@ -18,7 +18,8 @@ class ServerOutput:
         'stop': compile(r'\[..:..:..\] \[Server thread/INFO\]: Stopping server').search,
         'joined': compile(r'\[..:..:..\] \[Server thread/INFO\]: .*? joined the game').search,
         'left': compile(r'\[..:..:..\] \[Server thread/INFO\]: .*? left the game').search,
-        'advancement': compile(r'\[..:..:..\] \[Server thread/INFO\]: .*? has made the advancement \[.*?\]').search
+        'advancement': compile(r'\[..:..:..\] \[Server thread/INFO\]: .*? has made the advancement \[.*?\]').search,
+        'seed': compile(r'idfk').search
     }
 
     def _starting(self, line):
@@ -26,6 +27,7 @@ class ServerOutput:
         self.logging.info(f'Server {self.name} starting.')
 
     def _genstart(self, line):
+        self.server_start_time = self.loop.time()
         self.change_state(States.Generation)
         self.logging.info(f'Server {self.name} generation started.')
 
@@ -34,6 +36,7 @@ class ServerOutput:
         delta = self.loop.time() - self.server_start_time
         self.call_manager(self.manager.update_average_startup_time(delta))
         self.call_async(self.write(f'whitelist off'))
+        self.call_async(self.write(f'save-off'))
         self.change_state(States.Awaiting)
         self.logging.info(f'Server {self.name} generation finished.')
         self.logging.info(f'Server {self.name} ready in {delta:0.3f} seconds.')
@@ -44,10 +47,11 @@ class ServerOutput:
         self.logging.info(f'Server {self.name} prioritized.')
 
     def _time0(self, line):
-        self.speedrun_start_time = self.loop.time()
-        self.call_async(self.write(f'whitelist on'))
-        self.change_state(States.Speedrunning)
-        self.logging.info(f'Server {self.name} speedrun has started.')
+        if self.state == States.Prioritized:
+            self.speedrun_start_time = self.loop.time()
+            self.call_async(self.write(f'whitelist on'))
+            self.change_state(States.Speedrunning)
+            self.logging.info(f'Server {self.name} speedrun has started.')
 
     def _stop(self, line):
         self.call_manager(self.manager.deprioritize(self))
@@ -63,6 +67,7 @@ class ServerOutput:
         if self.player_count == 1:
             self.change_state(States.Probing)
             self.call_async(self.write(f'op {player_name}'))
+            self.op = player_name
         self.call_async(self.write(f'whitelist add {player_name}'))
         self.logging.info(f'Player {player_name} joined server {self.name}.')
 
@@ -70,7 +75,7 @@ class ServerOutput:
         player_name = line[33:-14]
         self.players[player_name] = False
         self.player_count -= 1
-        if self.player_count == 0:
+        if self.player_count == 0 or (self.state == States.Probing and self.op == player_name):
             self.call_async(self.stop())
         self.logging.info(f'Player {player_name} left server {self.name}.')
 
@@ -81,6 +86,9 @@ class ServerOutput:
             self.advancements[advancement_name] = True
             delta = self.loop.time() - self.speedrun_start_time
             self.logging.info(f'Advancement [{advancement_name}] has been made for the first time in [{delta//60:2.0f}:{delta%60:2.3f}].')
+    
+    def _seed(self, line):
+        pass
 
     _reactions = {
         'starting': _starting,
@@ -91,7 +99,8 @@ class ServerOutput:
         'stop': _stop,
         'joined': _joined,
         'left': _left,
-        'advancement': _advancement
+        'advancement': _advancement,
+        'seed': _seed
     }
 
     async def read_loop(self):

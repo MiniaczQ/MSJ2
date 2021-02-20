@@ -12,12 +12,13 @@ settings = {}
 defaults = {
     'server_jar_name': 'server.jar',
     'java_arguments': '',
-    'motd': '@name',
+    'motd': '%(name)s',
     'server_count': 3,
-    'local_ports_start': 25566,
-    'server_ip': '127.0.0.1',
+    'local_ports_start': 25000,
+    'server_ip': '192.168.2.129',
     'visible_port': 25565,
-    'nogui': False
+    'nogui': False,
+    'default_template': '1.14.4'
 }
 
 #   Unnamed funcitons that return whether a setting is valid
@@ -29,7 +30,8 @@ validator = {
     'local_ports_start': lambda v: v is not None and type(v) == int and 0 <= v and v <= 65535,
     'server_ip': lambda v: v is not None and type(v) == str,
     'visible_port': lambda v: v is not None and type(v) == int and 0 <= v and v <= 65535,
-    'nogui': lambda v: v is not None and type(v) == bool
+    'nogui': lambda v: v is not None and type(v) == bool,
+    'default_template': lambda v: v is not None and type(v) == str
 }
 
 try:

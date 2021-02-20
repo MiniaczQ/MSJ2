@@ -20,7 +20,7 @@ _java_path = getenv('JAVA') or getenv('JAVA_HOME') or getenv('JAVA_PATH')
 class Server(ServerFiles, ServerInput, ServerOutput, aio_loops.LoopBase):
     def _assemble_args(self, javargs, jarname, nogui):
         self.args = split(javargs)
-        self.args.insert(0, path.join(_java_path, 'bin', 'java.exe'))
+        self.args.insert(0, path.join(_java_path, 'bin', 'java'+('.exe' if 'win' is sys.platforms else '')))
         self.args.append('-jar')
         self.args.append(jarname)
         if nogui:
@@ -52,6 +52,7 @@ class Server(ServerFiles, ServerInput, ServerOutput, aio_loops.LoopBase):
 
         self.player_count = 0
         self.players = {}
+        self.op = None
         self.advancements = {}
 
         self.server_start_time = None

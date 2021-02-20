@@ -23,6 +23,9 @@ class ServerInput:
         self.delete_whitelist()
         self.delete_world()
         self.players.clear()
+        self.enforce_properties()
+        self.player_count = 0
+        self.op = None
         self.advancements.clear()
         self.start_time = None
 
@@ -46,15 +49,9 @@ class ServerInput:
         Starts the server process.
         '''
         if self.process is not None:
-            self.logging.info('process still alive when trying to start, waiting')
             await self.process.wait()
-            self.logging.info('process dead, starting')
-        self.delete_world()
-        self.delete_ops()
-        self.delete_whitelist()
-        self.enforce_properties()
+        self.reset()
         if self.process is None:
-            self.server_start_time = self.loop.time()
             self.process = await aio.subprocess.create_subprocess_exec(*self.args, stdin=aio.subprocess.PIPE, stdout=aio.subprocess.PIPE, cwd=self.directory)
             self.start_reader()
 

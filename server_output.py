@@ -49,6 +49,7 @@ class ServerOutput:
     def _time0(self, line):
         if self.state == States.Prioritized:
             self.speedrun_start_time = self.loop.time()
+            self.manager.server_timer.startTimer()
             self.call_async(self.write(f'whitelist on'))
             self.change_state(States.Speedrunning)
             self.logging.info(f'Server {self.name} speedrun has started.')
@@ -59,6 +60,7 @@ class ServerOutput:
         self.manager.server_killed(self)
         self.change_state(States.Offline)
         self.logging.info(f'Server {self.name} stopped.')
+        self.manager.server_timer.resetTimer()
 
     def _joined(self, line):
         player_name = line[33:-16]

@@ -14,6 +14,8 @@ from manager_input import ManagerInput
 from manager_output import ManagerOutput
 from manager_states import States
 
+from timer_server import TimerServer
+
 class Manager(ManagerFiles, ManagerInput, ManagerOutput, aio_loops.LoopBase):
     def __init__(self, redirection_manager, logging, startup_time, directory, templates_path, server_count, ip, port_start, servers_path, worlds_path, jarname, motd='%(name)s', javargs='', nogui=False, view_distance=16):
         self.state = self.change_state(States.Stopped)
@@ -50,6 +52,8 @@ class Manager(ManagerFiles, ManagerInput, ManagerOutput, aio_loops.LoopBase):
         self.offline_queue = deque()
         self.not_empty_queue = aio.Event()
 
+        self.server_timer = TimerServer(ip)
+        self.server_timer.start()
 
 
 

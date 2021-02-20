@@ -86,7 +86,8 @@ class ServerInput:
             'motd': self.motd,
             'level-name': 'world',
             'level-seed': '',
-            'view-distance': self.view_distance
+            'view-distance': self.view_distance,
+            'spawn-protection': 0
         })
     
     def call_manager(self, coroutine):

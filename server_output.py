@@ -82,7 +82,7 @@ class ServerOutput:
     _adv = compile(r'has made the advancement').search
     def _advancement(self, line):
         advancement_name = line[ServerOutput._adv(line).end(0)+2:-1]
-        if self.advancements.get(advancement_name) is None:
+        if self.advancements.get(advancement_name) is None and self.state == States.Speedrunning:
             self.advancements[advancement_name] = True
             delta = self.loop.time() - self.speedrun_start_time
             self.logging.info(f'Advancement [{advancement_name}] has been made for the first time in [{delta//60:2.0f}:{delta%60:2.3f}].')

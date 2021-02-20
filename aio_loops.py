@@ -23,21 +23,14 @@ class RedirectorThread(Thread):
     pass
 
 class LoopBase:
-    def call(self, coroutine):
+    def call_fat(self, coroutine):
         '''
-        Untracked execution called from another thread.
+        Call an async function from another thread (loop).
         '''
-        self.loop.call_soon_threadsafe(coroutine)
-        aio.SelectorEventLoop().call_soon_threadsafe
+        aio.run_coroutine_threadsafe(coroutine, loop=self.loop)
 
-    def ensure(self, coroutine):
+    def call_async(self, coroutine):
         '''
-        Untracked execution called from the same thread.
+        Call an async function in the same thread (loop).
         '''
-        aio.ensure_future(coroutine, loop=self.loop)
-
-    def later(self, delay, coroutine):
-        '''
-        Tracked execution after specified delay called from the same thread.
-        '''
-        return self.loop.call_later(delay, coroutine)
+        return self.loop.create_task(coroutine)

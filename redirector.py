@@ -42,13 +42,13 @@ class Redirector(aio_loops.LoopBase):
         
     async def start(self):
         '''
-        Attempts to start the redirector.
+        Attempts to start the redirector.\n
         Fails if redirector is already running.
         '''
         if self.server is None:
             self.event.set()
 
-            self.ensure(self.run())
+            self.call_async(self.run())
 
     async def run(self):
         '''
@@ -59,19 +59,21 @@ class Redirector(aio_loops.LoopBase):
         async def forward(src, dst):
             '''
             Forward data.\n
-            Stop if:
-            - out of data,
+            Stop if:\n
+            - out of data,\n
             - external stop.
             '''
-            data = b''
-            while data and not dst.is_closing():
-                data = await src.read(self.packet_size)
-                dst.write(data)
-
-                if not self.event.is_set():
+            try:
+                data = b' '
+                while data and self.event.is_set() and not dst.is_closing() :
+                    data = await src.read(self.packet_size)
+                    dst.write(data)
+                
+                if not data or not self.event.is_set():
                     dst.close()
                     await dst.wait_closed()
-                    break
+            except ConnectionAbortedError:
+                pass
 
         async def pair_up(c_reader, c_writer):
             '''
@@ -81,8 +83,27 @@ class Redirector(aio_loops.LoopBase):
             - client to server,\n
             - server to client.
             '''
-            s_reader, s_writer = await aio.open_connection(self.ip, self.port_to, family=socket.AF_INET)
-            self.ensure(forward(s_reader, c_writer))
-            self.ensure(forward(c_reader, s_writer))
+            try:
+                s_reader, s_writer = await aio.open_connection(self.ip, self.port_to, family=socket.AF_INET)
+                self.call_async(forward(s_reader, c_writer))
+                self.call_async(forward(c_reader, s_writer))
+            except ConnectionRefusedError:
+                pass
         
         self.server = await aio.start_server(pair_up, self.ip, self.port_from, family=socket.AF_INET, backlog=5)
+
+
+
+
+
+#   Testing
+
+if __name__ == '__main__':
+    import asyncio as aio
+
+    aio.set_event_loop(aio_loops.RedirectorLoop)
+
+    rm = Redirector('192.168.1.2', 25566, 25565, 2**16)
+
+    rm.call_async(rm.start())
+    aio_loops.RedirectorLoop.run_forever()

@@ -99,7 +99,7 @@ if __name__ == '__main__':
         rm = RedirectionManager('192.168.1.2', (25566, 25567), 25565, 2**16)
         
         await rm.append(25566)
-        await aio.sleep(2)
+        await aio.sleep(10000)
         await rm.remove(25566)
         await aio.sleep(2)
         await rm.append(25566)

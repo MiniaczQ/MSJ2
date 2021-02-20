@@ -8,11 +8,12 @@ import sys
 from server_states import States
 
 class ServerInput:
-    def write(self, msg):
+    async def write(self, msg):
         '''
         Writes to the server console.
         '''
-        self.process.write(msg)
+        self.process.stdin.write((msg + '\n').encode())
+        await self.process.stdin.drain()
 
     def reset(self):
         '''
@@ -44,8 +45,16 @@ class ServerInput:
         '''
         Starts the server process.
         '''
+        if self.process is not None:
+            self.logging.info('process still alive when trying to start, waiting')
+            await self.process.wait()
+            self.logging.info('process dead, starting')
+        self.delete_world()
+        self.delete_ops()
+        self.delete_whitelist()
+        self.enforce_properties()
         if self.process is None:
-            self.server_start_time = aio.get_event_loop().time()
+            self.server_start_time = self.loop.time()
             self.process = await aio.subprocess.create_subprocess_exec(*self.args, stdin=aio.subprocess.PIPE, stdout=aio.subprocess.PIPE, cwd=self.directory)
             self.start_reader()
 
@@ -54,6 +63,7 @@ class ServerInput:
         Stops the server process.
         '''
         if self.process is not None:
+            self._stop('')
             self.stop_reader()
             self.process.terminate()
             await self.process.wait()
@@ -64,10 +74,26 @@ class ServerInput:
         Start server console reader.
         '''
         self.reader.set()
-        aio.ensure_future(self.read_loop())
+        self.call_async(self.read_loop())
     
     def stop_reader(self):
         '''
         Stop server console reader.
         '''
         self.reader.clear()
+
+    def enforce_properties(self):
+        self.set_properties({
+            'server-ip': self.ip,
+            'server-port': self.port,
+            'motd': self.motd,
+            'level-name': 'world',
+            'level-seed': '',
+            'view-distance': self.view_distance
+        })
+    
+    def call_manager(self, coroutine):
+        self.manager.call_async(coroutine)
+
+    def call_redirector(self, coroutine):
+        self.manager.redirection_manager.call_fat(coroutine)

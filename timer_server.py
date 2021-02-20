@@ -156,7 +156,7 @@ class TimerServer:
 
 if __name__ == "__main__":
     import keyboard
-    ts = TimerServer()
+    ts = TimerServer(addr="192.168.0.107")
     ts.start()
     keyboard.add_hotkey("alt+\\",ts.resetTimer)
     keyboard.add_hotkey("alt+[",ts.startTimer)

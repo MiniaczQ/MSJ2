@@ -88,7 +88,8 @@ class ServerOutput:
             self.logging.info(f'Advancement [{advancement_name}] has been made for the first time in [{delta//60:2.0f}:{delta%60:2.3f}].')
     
     def _seed(self, line):
-        pass
+        #   TODO
+        self.store_world(line[:])
 
     _reactions = {
         'starting': _starting,

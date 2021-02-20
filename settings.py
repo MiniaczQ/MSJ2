@@ -14,7 +14,7 @@ defaults = {
     'java_arguments': '',
     'motd': '%(name)s',
     'server_count': 3,
-    'local_ports_start': 25000,
+    'local_ports_start': 26000,
     'server_ip': '192.168.2.129',
     'visible_port': 25565,
     'nogui': False,

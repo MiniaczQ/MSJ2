@@ -1,6 +1,9 @@
 from discord_slash.utils import manage_commands
 
 class DiscordBotReact:
+
+    stateEmotes="💤⌛⌛✅✅✅🏃💤"
+
     async def setupMessage(self):
         self.get_channel(self.CHANNEL)
         channel = self.get_channel(self.CHANNEL)
@@ -11,10 +14,10 @@ class DiscordBotReact:
         await self.updateMessage()
 
     async def updateMessage(self):
-        worlds = ""
+        worlds = self.getWorldsString()
         await self.message.edit(content=f'''
         Worlds:
-        {worlds}
+        ```{worlds}```
         Game Settings:```
         Render Distance: {self.serverSettings['render-distance']}
         Game Version: {self.getTemplateName(self.serverSettings['version'])}
@@ -27,7 +30,8 @@ class DiscordBotReact:
     def getWorldsString(self):
         worlds = ""
         for i in self.manager.servers:
-            i.state()
+            worlds += DiscordBotReact.stateEmotes[i.state]
+        return worlds
 
     def getTemplateName(self,name):
         if name[-1] == "f":

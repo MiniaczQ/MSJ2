@@ -9,7 +9,7 @@ class DiscordBotCommands:
 
         @self.slash.slash(
             name="render-distance",
-            description="Change Render Distance",
+            description="Change render distance.",
             guild_ids=[self.GUILD],
             options=[
                 manage_commands.create_option(
@@ -46,7 +46,7 @@ class DiscordBotCommands:
 
         @self.slash.slash(
             name="version",
-            description="Change Game Version",
+            description="Change game version.",
             guild_ids=[self.GUILD]
         )
         async def commandVersion(ctx, version: str):
@@ -60,17 +60,17 @@ class DiscordBotCommands:
 
         @self.slash.slash(
             name="whitelist-mode",
-            description="Change Game Version",
+            description="Change whitelist mode.",
             guild_ids=[self.GUILD],
             options=[
                 manage_commands.create_option(
                     "wlm",
-                    "The white-list mode.",
+                    "The whitelist mode.",
                     3,
                     True,
                     choices=[
-                        manage_commands.create_choice("auto","Automatic"),
-                        manage_commands.create_choice("off","Off")
+                        manage_commands.create_choice("auto", "Automatic"),
+                        manage_commands.create_choice("off", "Off")
                     ]
                 )
             ]
@@ -79,6 +79,52 @@ class DiscordBotCommands:
             await ctx.respond()
             if ctx.message.channel.id == self.CHANNEL:
                 self.serverSettings["whitelist-mode"] = wlm
+                await self.updateMessage()
+            else:
+                await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
+                await ctx.message.delete()
+
+        @self.slash.slash(
+            name="operator-mode",
+            description="Change operator mode.",
+            guild_ids=[self.GUILD],
+            options=[
+                manage_commands.create_option(
+                    "player", "The player to set operator mode to (or 'auto' for automatic).", 3, True)
+            ]
+        )
+        async def commandOPM(ctx, player):
+            await ctx.respond()
+            if ctx.message.channel.id == self.CHANNEL:
+                self.serverSettings["operator-mode"] = player
+                await self.updateMessage()
+            else:
+                await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
+                await ctx.message.delete()
+
+        @self.slash.slash(
+            name="priority-mode",
+            description="Change priority mode.",
+            guild_ids=[self.GUILD],
+            options=[
+                manage_commands.create_option(
+                    "mode",
+                    "The mode to set priority mode to.",
+                    3,
+                    True,
+                    choices=[
+                        manage_commands.create_choice(
+                            "message", "On Operator Message"),
+                        manage_commands.create_choice(
+                            "2player", "On Second Player Join")
+                    ]
+                )
+            ]
+        )
+        async def commandOPM(ctx, mode):
+            await ctx.respond()
+            if ctx.message.channel.id == self.CHANNEL:
+                self.serverSettings["priority-mode"] = mode
                 await self.updateMessage()
             else:
                 await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")

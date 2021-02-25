@@ -22,6 +22,10 @@ class DiscordBot(discord.Client, DiscordBotCommands, DiscordBotReact, DiscordBot
         await self.setupMessage()
 
 
+class MockServer:
+    def __init__(self,state):
+        self.state = state
+
 if __name__ == "__main__":
     from manager import Manager
     from os import getcwd, path
@@ -29,6 +33,7 @@ if __name__ == "__main__":
     from unittest.mock import Mock
     root = getcwd()
     m = Manager(Mock(), logging, 12, root, path.join(root, 'templates'), 6, '192.168.1.2', 25566, path.join(root, 'servers'), path.join(root, 'worlds'), 'fabric-server-launch.jar')
+    m.servers = [MockServer(0),MockServer(1),MockServer(4)]
     load_dotenv()
     TOKEN = getenv('DISCORD_TOKEN')
     CHANNEL = int(getenv('DISCORD_CHANNEL'))

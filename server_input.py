@@ -10,14 +10,17 @@ from server_states import States
 class ServerInput:
     async def write(self, msg):
         '''
-        Writes to the server console.
+        Coroutine.\n
+        Write to server.
         '''
         self.process.stdin.write((msg + '\n').encode())
         await self.process.stdin.drain()
 
     def reset(self):
         '''
-        Deletes world, whitelist and server operators from the server.
+        Delete world, whitelist, ops.\n
+        Reset class variables.\n
+        Update properties.
         '''
         self.delete_ops()
         self.delete_whitelist()
@@ -39,14 +42,14 @@ class ServerInput:
 
     def store_world(self, seed):
         '''
-        Called after '/seed' is used.\n
         Stores the world with the seed as a name.
         '''
         self.store_world(seed)
 
     async def start(self):
         '''
-        Starts the server process.
+        Coroutine.\n
+        Start the server process.
         '''
         if self.process is not None:
             await self.process.wait()
@@ -57,7 +60,8 @@ class ServerInput:
 
     async def stop(self):
         '''
-        Stops the server process.
+        Coroutine.\n
+        Stop the server process.
         '''
         if self.process is not None:
             self._stop('')
@@ -80,6 +84,9 @@ class ServerInput:
         self.reader.clear()
 
     def enforce_properties(self):
+        '''
+        Update server properties.
+        '''
         self.set_properties({
             'server-ip': self.ip,
             'server-port': self.port,
@@ -91,7 +98,13 @@ class ServerInput:
         })
     
     def call_manager(self, coroutine):
+        '''
+        Call manager's coroutine.
+        '''
         self.manager.call_async(coroutine)
 
     def call_redirector(self, coroutine):
+        '''
+        Call redirector's coroutine.
+        '''
         self.manager.redirection_manager.call_fat(coroutine)

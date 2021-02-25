@@ -1,5 +1,5 @@
 '''
-Manager output interface.
+Output interface of the manager.
 '''
 
 class ManagerOutput:
@@ -8,3 +8,10 @@ class ManagerOutput:
         Called when manager state changes.
         '''
         pass
+
+    def server_killed(self, server):
+        '''
+        Called when server gets killed.
+        '''
+        self.offline_queue.append(server)
+        self.not_empty_queue.set()

@@ -1,5 +1,6 @@
 '''
-Execution of modules on different threads.
+Main application.
+Launches modules on different threads.
 '''
 
 import asyncio as aio

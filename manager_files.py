@@ -1,5 +1,5 @@
 '''
-Manager file operations.
+File operations for the manager class.
 '''
 
 from shutil import rmtree
@@ -8,7 +8,8 @@ from os import path, mkdir, listdir
 class ManagerFiles:
     def get_all_templates(self):
         '''
-        Return a list of folders inside of templates folder.
+        Return list of available templates.\n
+        If folder didn't exist create one and returns empty list.
         '''
         if path.isdir(self.templates_path):
             return listdir(self.templates_path)

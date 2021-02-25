@@ -19,6 +19,9 @@ _java_path = getenv('JAVA') or getenv('JAVA_HOME') or getenv('JAVA_PATH')
 
 class Server(ServerFiles, ServerInput, ServerOutput, aio_loops.LoopBase):
     def _assemble_args(self, javargs, jarname, nogui):
+        '''
+        Assembles starting arguments.
+        '''
         self.args = split(javargs)
         self.args.insert(0, path.join(_java_path, 'bin', 'java'+('.exe' if 'win' in sys.platform else '')))
         self.args.append('-jar')
@@ -27,9 +30,6 @@ class Server(ServerFiles, ServerInput, ServerOutput, aio_loops.LoopBase):
             self.args.append('--nogui')
 
     def __init__(self, manager, logging, id, ip, port, servers_path, template_path, worlds_path, jarname, motd='%(name)s', javargs='', nogui=False, view_distance=16):
-        '''
-        Creates the instance's folder by copying the template.
-        '''
         self.manager = manager
         self.logging = logging
         self.loop = aio_loops.ManagerLoop

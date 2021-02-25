@@ -1,5 +1,5 @@
 '''
-Possible states the manager can be in.
+States of the manager.
 '''
 
 class States:

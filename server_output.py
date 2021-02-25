@@ -23,15 +23,24 @@ class ServerOutput:
     }
 
     def _starting(self, line):
+        '''
+        Server is starting.
+        '''
         self.change_state(States.Starting)
         self.logging.info(f'Server {self.name} starting.')
 
     def _genstart(self, line):
+        '''
+        Generation started.
+        '''
         self.server_start_time = self.loop.time()
         self.change_state(States.Generation)
         self.logging.info(f'Server {self.name} generation started.')
 
     def _gendone(self, line):
+        '''
+        Generation is done.
+        '''
         self.call_redirector(self.manager.redirection_manager.append(self.port))
         delta = self.loop.time() - self.server_start_time
         self.call_manager(self.manager.update_average_startup_time(delta))
@@ -42,11 +51,17 @@ class ServerOutput:
         self.logging.info(f'Server {self.name} ready in {delta:0.3f} seconds.')
 
     def _prompt(self, line):
+        '''
+        Priority prompt detected.
+        '''
         self.call_manager(self.manager.prioritize(self))
         self.change_state(States.Prioritized)
         self.logging.info(f'Server {self.name} prioritized.')
 
     def _time0(self, line):
+        '''
+        Speedrun start.
+        '''
         if self.state == States.Prioritized:
             self.speedrun_start_time = self.loop.time()
             self.manager.server_timer.startTimer()
@@ -55,6 +70,9 @@ class ServerOutput:
             self.logging.info(f'Server {self.name} speedrun has started.')
 
     def _stop(self, line):
+        '''
+        Server is stopping.
+        '''
         self.call_manager(self.manager.deprioritize(self))
         self.call_redirector(self.manager.redirection_manager.remove(self.port))
         self.manager.server_killed(self)
@@ -63,6 +81,9 @@ class ServerOutput:
         self.manager.server_timer.resetTimer()
 
     def _joined(self, line):
+        '''
+        Player joined.
+        '''
         player_name = line[33:-16]
         self.players[player_name] = True
         self.player_count += 1
@@ -74,6 +95,9 @@ class ServerOutput:
         self.logging.info(f'Player {player_name} joined server {self.name}.')
 
     def _left(self, line):
+        '''
+        Player left.
+        '''
         player_name = line[33:-14]
         self.players[player_name] = False
         self.player_count -= 1
@@ -83,6 +107,9 @@ class ServerOutput:
 
     _adv = compile(r'has made the advancement').search
     def _advancement(self, line):
+        '''
+        Advancement achieved.
+        '''
         advancement_name = line[ServerOutput._adv(line).end(0)+2:-1]
         if self.advancements.get(advancement_name) is None and self.state == States.Speedrunning:
             self.advancements[advancement_name] = True
@@ -90,6 +117,9 @@ class ServerOutput:
             self.logging.info(f'Advancement [{advancement_name}] has been made for the first time in [{delta//60:2.0f}:{delta%60:2.3f}].')
     
     def _seed(self, line):
+        '''
+        here be dragons
+        '''
         #   TODO
         self.store_world(line[:])
 

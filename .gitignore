@@ -5,3 +5,5 @@ settings.json
 __pycache__
 templates
 servers
+test.py
+old

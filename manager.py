@@ -52,8 +52,8 @@ class Manager(ManagerFiles, ManagerInput, ManagerOutput, aio_loops.LoopBase):
         self.offline_queue = deque()
         self.not_empty_queue = aio.Event()
 
-        self.server_timer = TimerServer(ip)
-        self.server_timer.start()
+        #self.server_timer = TimerServer(ip)
+        #self.server_timer.start()
 
 
 

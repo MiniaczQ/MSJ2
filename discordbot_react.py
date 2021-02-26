@@ -1,8 +1,9 @@
 from discord_slash.utils import manage_commands
 
+
 class DiscordBotReact:
 
-    stateEmotes="💤⌛⌛✅✅✅🏃💤"
+    stateEmotes = "💤⌛⌛✅✅✅🏃💤"
 
     async def setupMessage(self):
         self.get_channel(self.CHANNEL)
@@ -24,16 +25,17 @@ class DiscordBotReact:
         Whitelist Mode: {self.serverSettings['whitelist-mode']}
         Priority Mode: {self.serverSettings['priority-mode']}
         Operator Mode: {self.serverSettings['operator-mode']}
-        ```'''.replace("    ", "")
-        )
-    
+        ```
+        {"**Use /reload or /start to apply changes.**" if self.hasChanges else ""}'''.replace("    ", "")
+                                )
+
     def getWorldsString(self):
         worlds = ""
         for i in self.manager.servers:
             worlds += DiscordBotReact.stateEmotes[i.state]
         return worlds
 
-    def getTemplateName(self,name):
+    def getTemplateName(self, name):
         if name[-1] == "f":
             name = name[:-1] + " with Fabric"
         else:
@@ -55,3 +57,5 @@ class DiscordBotReact:
                 choices=choices
             )
         ]
+
+        await self.slash.sync_all_commands()

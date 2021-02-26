@@ -25,21 +25,8 @@ class DiscordBotCommands:
             if ctx.message.channel.id == self.CHANNEL:
                 amount = max(2, min(amount, 32))
                 self.serverSettings["render-distance"] = amount
+                self.hasChanges = True
                 await self.updateMessage()
-            else:
-                await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
-                await ctx.message.delete()
-
-        @self.slash.slash(
-            name="reload",
-            description="Reload juggler stuff for the discord bot.",
-            guild_ids=[self.GUILD]
-        )
-        async def commandReload(ctx):
-            await ctx.respond()
-            if ctx.message.channel.id == self.CHANNEL:
-                await self.updateTemplates()
-                await self.slash.sync_all_commands()
             else:
                 await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
                 await ctx.message.delete()
@@ -53,6 +40,7 @@ class DiscordBotCommands:
             await ctx.respond()
             if ctx.message.channel.id == self.CHANNEL and version in self.manager.get_all_templates():
                 self.serverSettings["version"] = version
+                self.hasChanges = True
                 await self.updateMessage()
             else:
                 await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
@@ -64,7 +52,7 @@ class DiscordBotCommands:
             guild_ids=[self.GUILD],
             options=[
                 manage_commands.create_option(
-                    "wlm",
+                    "mode",
                     "The whitelist mode.",
                     3,
                     True,
@@ -75,10 +63,11 @@ class DiscordBotCommands:
                 )
             ]
         )
-        async def commandWLM(ctx, wlm: str):
+        async def commandWLM(ctx, mode: str):
             await ctx.respond()
             if ctx.message.channel.id == self.CHANNEL:
-                self.serverSettings["whitelist-mode"] = wlm
+                self.serverSettings["whitelist-mode"] = mode
+                self.hasChanges = True
                 await self.updateMessage()
             else:
                 await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
@@ -97,6 +86,7 @@ class DiscordBotCommands:
             await ctx.respond()
             if ctx.message.channel.id == self.CHANNEL:
                 self.serverSettings["operator-mode"] = player
+                self.hasChanges = True
                 await self.updateMessage()
             else:
                 await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
@@ -121,11 +111,57 @@ class DiscordBotCommands:
                 )
             ]
         )
-        async def commandOPM(ctx, mode):
+        async def commandPM(ctx, mode):
             await ctx.respond()
             if ctx.message.channel.id == self.CHANNEL:
                 self.serverSettings["priority-mode"] = mode
+                self.hasChanges = True
                 await self.updateMessage()
+            else:
+                await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
+                await ctx.message.delete()
+
+        @self.slash.slash(
+            name="start",
+            description="Starts/Restarts the servers. This will also load the settings.",
+            guild_ids=[self.GUILD]
+        )
+        async def commandStart(ctx):
+            await ctx.respond()
+            if ctx.message.channel.id == self.CHANNEL:
+                # TODO:Apply settings to manager
+                # TODO:Stop then start manager
+                self.hasChanges = False
+                await self.updateMessage()
+            else:
+                await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
+                await ctx.message.delete()
+
+        @self.slash.slash(
+            name="stop",
+            description="Stops the servers. This will also load the settings.",
+            guild_ids=[self.GUILD]
+        )
+        async def commandStop(ctx):
+            await ctx.respond()
+            if ctx.message.channel.id == self.CHANNEL:
+                # TODO:Stop manager
+                await self.updateMessage()
+            else:
+                await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
+                await ctx.message.delete()
+
+        @self.slash.slash(
+            name="reload",
+            description="Reload juggler stuff for the discord bot and apply settings.",
+            guild_ids=[self.GUILD]
+        )
+        async def commandReload(ctx):
+            await ctx.respond()
+            if ctx.message.channel.id == self.CHANNEL:
+                # TODO:Apply settings to manager
+                self.hasChanges = False
+                await self.updateTemplates()
             else:
                 await ctx.send(f"{ctx.message.author.mention} Please use the <#{str(self.CHANNEL)}> channel!")
                 await ctx.message.delete()

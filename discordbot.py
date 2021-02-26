@@ -1,12 +1,11 @@
 from os import getenv
 from dotenv import load_dotenv
 import discord
-from discordbot_commands import DiscordBotCommands
 from discordbot_react import DiscordBotReact
 from discordbot_listen import DiscordBotListen
 
 
-class DiscordBot(discord.Client, DiscordBotCommands, DiscordBotReact, DiscordBotListen):
+class DiscordBot(discord.Client, DiscordBotReact, DiscordBotListen):
 
     def __init__(self, manager, serverNames, channel, guild, serverSettings):
         self.CHANNEL = channel
